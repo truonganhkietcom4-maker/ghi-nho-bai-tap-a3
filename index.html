@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghi nhớ bài tập của A3 - By anh kiệt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .date-selector {
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .date-selector label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .date-selector input {
+            padding: 12px 15px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-selector input:hover {
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .day-of-week {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            min-width: 120px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .tasks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px 20px;
+            min-height: 400px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-su-kien {
+            border-left-color: #f59e0b;
+        }
+
+        .section-bai-hoc {
+            border-left-color: #667eea;
+        }
+
+        .section-kiem-tra {
+            border-left-color: #ef4444;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .section-su-kien .task-item {
+            border-left-color: #f59e0b;
+        }
+
+        .section-bai-hoc .task-item {
+            border-left-color: #667eea;
+        }
+
+        .section-kiem-tra .task-item {
+            border-left-color: #ef4444;
+        }
+
+        .empty-message {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 1.1em;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+        }
+
+        footer a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .tasks-container {
+                grid-template-columns: 1fr;
+            }
+
+            .date-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-selector input,
+            .day-of-week {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Ghi nhớ bài tập của A3</h1>
+            <p class="subtitle">By anh kiệt</p>
+        </header>
+
+        <div class="date-selector">
+            <label for="datePicker">📅 Chọn ngày:</label>
+            <input type="date" id="datePicker">
+            <span id="dayOfWeek" class="day-of-week"></span>
+        </div>
+
+        <div class="tasks-container">
+            <div class="section section-su-kien">
+                <h2>���� Sự Kiện</h2>
+                <ul id="suKien" class="task-list"></ul>
+            </div>
+
+            <div class="section section-bai-hoc">
+                <h2>📖 Bài Học</h2>
+                <ul id="baiHoc" class="task-list"></ul>
+            </div>
+
+            <div class="section section-kiem-tra">
+                <h2>📝 Kiểm Tra</h2>
+                <ul id="kiemTra" class="task-list"></ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024 Ghi nhớ bài tập A3 - Thiết kế bởi anh kiệt</p>
+            <a href="#" onclick="goToAdmin()">🔐 Admin</a>
+        </footer>
+    </div>
+
+    <script>
+        const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+
+        // Dữ liệu mẫu
+        const sampleData = {
+            "2024-12-16": {
+                suKien: ["Cuộc họp lớp lúc 2:00 PM"],
+                baiHoc: ["Toán - Bài 5: Phân số", "Tiếng Anh - Unit 3"],
+                kiemTra: []
+            },
+            "2024-12-17": {
+                suKien: [],
+                baiHoc: ["Vật Lý - Chương 2", "Hóa Học - Ôn tập"],
+                kiemTra: ["Kiểm tra Toán lúc 9:00 AM"]
+            },
+            "2024-12-18": {
+                suKien: ["Ngày kỉ niệm thành lập"],
+                baiHoc: [],
+                kiemTra: ["Kiểm tra Tiếng Anh"]
+            }
+        };
+
+        // Set today as default date
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('datePicker').value = today;
+            updateDayOfWeek();
+            loadTasks();
+        });
+
+        // Update day of week when date changes
+        document.getElementById('datePicker').addEventListener('change', () => {
+            updateDayOfWeek();
+            loadTasks();
+        });
+
+        function updateDayOfWeek() {
+            const datePicker = document.getElementById('datePicker');
+            const date = new Date(datePicker.value + 'T00:00:00');
+            const dayName = days[date.getDay()];
+            document.getElementById('dayOfWeek').textContent = dayName;
+        }
+
+        function loadTasks() {
+            const selectedDate = document.getElementById('datePicker').value;
+            const allTasks = JSON.parse(localStorage.getItem('allTasks')) || sampleData;
+            const tasksForDate = allTasks[selectedDate] || { suKien: [], baiHoc: [], kiemTra: [] };
+
+            // Load Sự Kiện
+            const suKienList = document.getElementById('suKien');
+            suKienList.innerHTML = '';
+            if (tasksForDate.suKien && tasksForDate.suKien.length > 0) {
+                tasksForDate.suKien.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.textContent = task;
+                    suKienList.appendChild(li);
+                });
+            } else {
+                suKienList.innerHTML = '<li class="empty-message">Không có sự kiện</li>';
+            }
+
+            // Load Bài Học
+            const baiHocList = document.getElementById('baiHoc');
+            baiHocList.innerHTML = '';
+            if (tasksForDate.baiHoc && tasksForDate.baiHoc.length > 0) {
+                tasksForDate.baiHoc.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.textContent = task;
+                    baiHocList.appendChild(li);
+                });
+            } else {
+                baiHocList.innerHTML = '<li class="empty-message">Không có bài học</li>';
+            }
+
+            // Load Kiểm Tra
+            const kiemTraList = document.getElementById('kiemTra');
+            kiemTraList.innerHTML = '';
+            if (tasksForDate.kiemTra && tasksForDate.kiemTra.length > 0) {
+                tasksForDate.kiemTra.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.textContent = task;
+                    kiemTraList.appendChild(li);
+                });
+            } else {
+                kiemTraList.innerHTML = '<li class="empty-message">Không có kiểm tra</li>';
+            }
+        }
+
+        function goToAdmin() {
+            const password = prompt('Nhập mật khẩu admin:');
+            if (password === '277214') {
+                window.location.href = 'admin.html';
+            } else if (password !== null) {
+                alert('❌ Mật khẩu không đúng!');
+            }
+        }
+    </script>
+</body>
+</html>
