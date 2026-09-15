@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Solver - Giải Bài Tập Thông Minh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #e0e0ff;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header h1 {
+            font-size: 3em;
+            background: linear-gradient(45deg, #00d4ff, #0099ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.8));
+            }
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #00d4ff;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .tab-btn:hover::before {
+            left: 100%;
+        }
+
+        .tab-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), inset 0 0 20px rgba(0, 212, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+            border-color: #0099ff;
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .card {
+            background: rgba(20, 30, 60, 0.7);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out both;
+        }
+
+        .card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4), inset 0 0 20px rgba(0, 212, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            color: #e0e0ff;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5), inset 0 0 10px rgba(0, 212, 255, 0.1);
+            background: rgba(0, 50, 100, 0.3);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6);
+        }
+
+        .ai-response-box {
+            background: rgba(0, 50, 100, 0.3);
+            border: 2px solid #ff00ff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+            min-height: 100px;
+            color: #e0e0ff;
+            line-height: 1.8;
+            font-size: 1.05em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), inset 0 0 20px rgba(255, 0, 255, 0.05);
+        }
+
+        .ai-response-box.active {
+            display: block;
+            animation: slideUp 0.5s ease-out, glow 2s ease-in-out infinite;
+        }
+
+        .history-item {
+            background: rgba(0, 30, 60, 0.5);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .history-item:hover {
+            border-left-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .history-question {
+            color: #00d4ff;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .history-answer {
+            color: #e0e0ff;
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00d4ff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            color: #0099ff;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        footer a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ AI SOLVER ⚡</h1>
+            <p>Trí Tuệ Nhân Tạo Giải Bài Tập</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('ask')">❓ Hỏi AI</button>
+            <button class="tab-btn" onclick="switchTab('history')">📜 Lịch Sử</button>
+            <button class="tab-btn" onclick="switchTab('tips')">💡 Mẹo & Bí Kíp</button>
+        </div>
+
+        <!-- Tab Hỏi AI -->
+        <div id="ask" class="tab-content active">
+            <div class="card">
+                <h2 style="color: #00d4ff; margin-bottom: 20px;">🔮 Đặt Câu Hỏi Của Bạn</h2>
+                <div class="form-group">
+                    <label for="subject">📚 Chọn Môn Học:</label>
+                    <select id="subject">
+                        <option value="">-- Chọn Môn --</option>
+                        <option value="Toán">Toán Học</option>
+                        <option value="Lý">Vật Lý</option>
+                        <option value="Hóa">Hóa Học</option>
+                        <option value="Sinh">Sinh Học</option>
+                        <option value="Anh">Tiếng Anh</option>
+                        <option value="Văn">Ngữ Văn</option>
+                        <option value="Sử">Lịch Sử</option>
+                        <option value="Địa">Địa Lý</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="aiQuestion">❓ Câu Hỏi:</label>
+                    <textarea id="aiQuestion" rows="5" placeholder="Gõ câu hỏi của bạn vào đây..."></textarea>
+                </div>
+                <button class="btn" onclick="askAI()">🚀 PHÂN TÍCH</button>
+                <div id="aiResponse" class="ai-response-box"></div>
+            </div>
+        </div>
+
+        <!-- Tab Lịch Sử -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <h2 style="color: #00d4ff; margin-bottom: 20px;">📜 Lịch Sử Câu Hỏi</h2>
+                <div id="historyList">
+                    <p style="color: #888; text-align: center;">Không có câu hỏi nào trong lịch sử</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Mẹo & Bí Kíp -->
+        <div id="tips" class="tab-content">
+            <div class="card">
+                <h2 style="color: #00d4ff; margin-bottom: 20px;">💡 Mẹo Giải Bài Hiệu Quả</h2>
+                <div style="color: #e0e0ff; line-height: 2;">
+                    <p>✨ <strong>Toán Học:</strong> Luôn vẽ sơ đồ, ghi rõ điều kiện, kiểm tra từng bước</p>
+                    <p>✨ <strong>Vật Lý:</strong> Xác định các lực, áp dụng định luật Newton, viết phương trình</p>
+                    <p>✨ <strong>Hóa Học:</strong> Cân bằng phương trình, tính mol, kiểm tra kết quả</p>
+                    <p>✨ <strong>Tiếng Anh:</strong> Phân tích từ vựng, ngữ pháp, viết đầy đủ ý tưởng</p>
+                    <p>✨ <strong>Ngữ Văn:</strong> Đọc kỹ bài, ghi chú ý tưởng chính, làm draft trước</p>
+                    <p style="margin-top: 20px; color: #ff00ff; text-align: center;">🎯 Hãy luôn suy nghĩ trước, AI chỉ là trợ thủ!</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024 AI Solver - Trợ Thủ Học Tập Thông Minh | <a href="index.html">📚 Quay Lại Bài Tập</a></p>
+        </footer>
+    </div>
+
+    <script>
+        let questionHistory = [];
+
+        // Tạo sao lấp lánh
+        function createStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+
+        function askAI() {
+            const subject = document.getElementById('subject').value;
+            const question = document.getElementById('aiQuestion').value.trim();
+            const responseDiv = document.getElementById('aiResponse');
+
+            if (!question) {
+                alert('⚠️ Vui lòng nhập câu hỏi!');
+                return;
+            }
+
+            if (!subject) {
+                alert('⚠️ Vui lòng chọn môn học!');
+                return;
+            }
+
+            responseDiv.innerHTML = '<div class="loading-spinner"></div> Đang phân tích...';
+            responseDiv.classList.add('active');
+
+            setTimeout(() => {
+                const answer = generateAIResponse(question, subject);
+                responseDiv.innerHTML = answer;
+
+                // Lưu vào lịch sử
+                questionHistory.unshift({
+                    subject: subject,
+                    question: question,
+                    answer: answer,
+                    time: new Date().toLocaleString()
+                });
+
+                if (questionHistory.length > 10) {
+                    questionHistory.pop();
+                }
+
+                document.getElementById('aiQuestion').value = '';
+            }, 1500);
+        }
+
+        function generateAIResponse(question, subject) {
+            const responses = {
+                'Toán': `📊 PHÂN TÍCH TOÁN HỌC\n\n❓ Câu hỏi: "${question}"\n\n🔍 Phương pháp giải:\n1️⃣ Xác định dạng bài (PT, hệ PT, bất đẳng thức, v.v.)\n2️⃣ Ghi rõ điều kiện xác định\n3️⃣ Áp dụng công thức/định lý phù hợp\n4️⃣ Tính toán từng bước\n5️⃣ Kiểm tra và kết luận\n\n💡 Mẹo: Vẽ sơ đồ hoặc bảng để hình dung rõ ràng!`,
+                'Lý': `⚡ PHÂN TÍCH VẬT LÝ\n\n❓ Câu hỏi: "${question}"\n\n🔍 Cách tiếp cận:\n1️⃣ Xác định các lực/trường tác dụng\n2️⃣ Vẽ sơ đồ lực\n3️⃣ Áp dụng định luật Newton\n4️⃣ Lập phương trình chuyển động\n5️⃣ Giải và kiểm tra đơn vị\n\n💡 Mẹo: Luôn chú ý đến hệ quy chiếu!`,
+                'Hóa': `🧪 PHÂN TÍCH HÓA HỌC\n\n❓ Câu hỏi: "${question}"\n\n🔍 Quy trình:\n1️⃣ Viết công thức cấu trúc\n2️⃣ Cân bằng phương trình hóa học\n3️⃣ Tính mol các chất\n4️⃣ Áp dụng tỉ lệ mol\n5️⃣ Tính kết quả cuối cùng\n\n💡 Mẹo: Kiểm tra điều kiện phản ứng!`,
+                'Sinh': `🧬 PHÂN TÍCH SINH HỌC\n\n❓ Câu hỏi: "${question}"\n\n🔍 Phương pháp:\n1️⃣ Hiểu rõ khái niệm cơ bản\n2️⃣ Phân tích quá trình sinh học\n3️⃣ Vẽ sơ đồ nếu cần\n4️⃣ Kết nối với các kiến thức liên quan\n5️⃣ Viết câu trả lời đầy đủ\n\n💡 Mẹo: Ghi nhớ các quy trình chính!`,
+                'Anh': `🌍 PHÂN TÍCH TIẾNG ANH\n\n❓ Câu hỏi: "${question}"\n\n🔍 Cách làm:\n1️⃣ Phân tích từ vựng\n2️⃣ Kiểm tra ngữ pháp\n3️⃣ Hiểu ngữ cảnh\n4️⃣ Sắp xếp ý tưởng\n5️⃣ Viết câu trả lời hoàn chỉnh\n\n💡 Mẹo: Luyện tập viết hàng ngày!`,
+                'Văn': `📖 PHÂN TÍCH NGỮ VĂN\n\n❓ Câu hỏi: "${question}"\n\n🔍 Hướng dẫn:\n1️⃣ Đọc kỹ tác phẩm\n2️⃣ Ghi chú ý tưởng chính\n3️⃣ Phân tích nhân vật/chủ đề\n4️⃣ Làm nháp trước\n5️⃣ Viết bài hoàn chỉnh\n\n💡 Mẹo: Trích dẫn chính xác từ tác phẩm!`,
+                'Sử': `🏛️ PHÂN TÍCH LỊCH SỬ\n\n❓ Câu hỏi: "${question}"\n\n🔍 Phương pháp:\n1️⃣ Ghi nhớ sự kiện, ngày tháng\n2️⃣ Hiểu nguyên nhân-kết quả\n3️⃣ Phân tích bối cảnh lịch sử\n4️⃣ So sánh các giai đoạn\n5️⃣ Rút ra kết luận\n\n💡 Mẹo: Lập dòng thời gian!`,
+                'Địa': `🌏 PHÂN TÍCH ĐỊA LÝ\n\n❓ Câu hỏi: "${question}"\n\n🔍 Cách tiếp cận:\n1️⃣ Xác định vị trí địa lý\n2️⃣ Phân tích điều kiện tự nhiên\n3️⃣ Xem xét yếu tố kinh tế-xã hội\n4️⃣ Liên hệ nguyên nhân-kết quả\n5️⃣ Kết luận toàn diện\n\n💡 Mẹo: Sử dụng bản đồ!`
+            };
+
+            return responses[subject] || `💫 PHÂN TÍCH AI\n\n❓ Câu hỏi: "${question}"\n\n🔍 Hướng dẫn chung:\n1️⃣ Hiểu rõ câu hỏi\n2️⃣ Thu thập thông tin cần thiết\n3️⃣ Phân tích từng phần\n4️⃣ Kết nối các ý tưởng\n5️⃣ Viết kết luận rõ ràng\n\n💡 Mẹo: Luôn kiểm tra lại bài của bạn!`;
+        }
+
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            if (questionHistory.length === 0) {
+                historyList.innerHTML = '<p style="color: #888; text-align: center;">Không có câu hỏi nào trong lịch sử</p>';
+                return;
+            }
+
+            historyList.innerHTML = questionHistory.map((item, index) => `
+                <div class="history-item">
+                    <div class="history-question">📚 ${item.subject} - ${item.time}</div>
+                    <div style="color: #00d4ff; margin: 10px 0;">❓ ${item.question}</div>
+                    <div class="history-answer">${item.answer}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
