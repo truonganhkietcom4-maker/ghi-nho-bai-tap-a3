@@ -16,9 +16,83 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .anime-girl {
+            position: fixed;
+            bottom: -50px;
+            right: -100px;
+            width: 500px;
+            height: 600px;
+            z-index: 2;
+            opacity: 0.15;
+            filter: blur(8px);
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) translateX(0px);
+            }
+            50% {
+                transform: translateY(-20px) translateX(-10px);
+            }
+        }
+
+        .bokeh {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            pointer-events: none;
+            animation: bokeh-float linear infinite;
+        }
+
+        @keyframes bokeh-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+            }
+        }
+
+        .flower {
+            position: fixed;
+            font-size: 40px;
+            filter: blur(2px);
+            opacity: 0.6;
+            pointer-events: none;
+            animation: flower-fall linear infinite;
+        }
+
+        @keyframes flower-fall {
+            0% {
+                transform: translateY(-100px) rotateZ(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(360deg);
+                opacity: 0;
+            }
         }
 
         .container {
+            position: relative;
+            z-index: 10;
             max-width: 1200px;
             margin: 0 auto;
             background: white;
@@ -259,10 +333,53 @@
             .day-of-week {
                 width: 100%;
             }
+
+            .anime-girl {
+                width: 300px;
+                height: 400px;
+            }
         }
     </style>
 </head>
 <body>
+    <canvas class="background-canvas" id="backgroundCanvas"></canvas>
+    
+    <!-- Anime Girl SVG -->
+    <svg class="anime-girl" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Đầu -->
+        <circle cx="100" cy="80" r="35" fill="#f5d5b8" opacity="0.8"/>
+        
+        <!-- Tóc -->
+        <path d="M 65 80 Q 65 45 100 40 Q 135 45 135 80" fill="#ff69b4" opacity="0.7"/>
+        <path d="M 70 70 Q 100 35 130 70" fill="#ff1493" opacity="0.6"/>
+        
+        <!-- Mắt -->
+        <circle cx="90" cy="75" r="6" fill="#1a1a1a" opacity="0.7"/>
+        <circle cx="110" cy="75" r="6" fill="#1a1a1a" opacity="0.7"/>
+        <circle cx="92" cy="73" r="2" fill="white" opacity="0.8"/>
+        <circle cx="112" cy="73" r="2" fill="white" opacity="0.8"/>
+        
+        <!-- Mũi -->
+        <line x1="100" y1="80" x2="100" y2="88" stroke="#d4a5a0" stroke-width="1" opacity="0.6"/>
+        
+        <!-- Miệng -->
+        <path d="M 95 95 Q 100 100 105 95" stroke="#ff6b9d" stroke-width="1.5" fill="none" opacity="0.7"/>
+        
+        <!-- Cơ thể -->
+        <rect x="75" y="115" width="50" height="60" rx="10" fill="#e8b4d0" opacity="0.7"/>
+        
+        <!-- Tay -->
+        <ellipse cx="60" cy="130" rx="12" ry="30" fill="#f5d5b8" opacity="0.7" transform="rotate(-30 60 130)"/>
+        <ellipse cx="140" cy="130" rx="12" ry="30" fill="#f5d5b8" opacity="0.7" transform="rotate(30 140 130)"/>
+        
+        <!-- Chân -->
+        <line x1="85" y1="175" x2="85" y2="230" stroke="#f5d5b8" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+        <line x1="115" y1="175" x2="115" y2="230" stroke="#f5d5b8" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+        
+        <!-- Halo (vòng sáng) -->
+        <circle cx="100" cy="50" r="40" fill="none" stroke="#ffff99" stroke-width="2" opacity="0.5" stroke-dasharray="5,5"/>
+    </svg>
+
     <div class="container">
         <header>
             <h1>📚 Ghi nhớ bài tập của A3</h1>
@@ -322,8 +439,50 @@
             }
         };
 
+        // Tạo nền động
+        function createAnimatedBackground() {
+            const canvas = document.getElementById('backgroundCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const flowers = ['🌸', '🌼', '🌷', '🌹', '💐', '✨'];
+
+            // Tạo bokeh
+            for (let i = 0; i < 15; i++) {
+                const bokeh = document.createElement('div');
+                bokeh.className = 'bokeh';
+                const size = Math.random() * 150 + 50;
+                const color = ['rgba(255, 105, 180, 0.5)', 'rgba(255, 182, 193, 0.5)', 'rgba(255, 255, 200, 0.5)', 'rgba(200, 150, 255, 0.5)'][Math.floor(Math.random() * 4)];
+                bokeh.style.width = size + 'px';
+                bokeh.style.height = size + 'px';
+                bokeh.style.left = Math.random() * 100 + '%';
+                bokeh.style.top = Math.random() * 100 + '%';
+                bokeh.style.background = color;
+                bokeh.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                bokeh.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(bokeh);
+            }
+
+            // Tạo hoa rơi
+            setInterval(() => {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+                flower.style.left = Math.random() * 100 + 'vw';
+                flower.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                flower.style.animationDelay = '0s';
+                document.body.appendChild(flower);
+
+                setTimeout(() => flower.remove(), 15000);
+            }, 500);
+        }
+
         // Set today as default date
         window.addEventListener('DOMContentLoaded', () => {
+            createAnimatedBackground();
+            
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('datePicker').value = today;
             updateDayOfWeek();
@@ -412,8 +571,7 @@
             const responses = [
                 `📖 Câu hỏi: "${question}"\n\n💡 Gợi ý:\nHãy xem lại bài học trong sách giáo khoa. Tìm kiếm từ khóa liên quan đến câu hỏi của bạn.\n\n🎯 Cách tiếp cận:\n1. Đọc kỹ đề bài\n2. Xác định dạng bài tập\n3. Áp dụng công thức hoặc quy tắc phù hợp\n4. Kiểm tra lại đáp án`,
                 `⭐ Bạn đặt câu hỏi hay!\n\n🔍 Để giải quyết:\n- Xác định thông tin đã cho\n- Liệt kê công thức cần dùng\n- Thực hiện từng bước tính toán\n- So sánh với lý thuyết\n\n💪 Hãy cố gắng làm trước, nếu khó khăn hãy hỏi thầy cô!`,
-                `✨ Đây là một câu hỏi thú vị!\n\n📚 Hướng dẫn:\n1. Ôn lại bài học trước đó\n2. Hiểu rõ định nghĩa cơ bản\n3. Thực hành với các ví dụ\n4. Giải bài tập tương tự\n\n🌟 Khi nào không hiểu, đừng ngần ngại hỏi!`,
-                `💎 Tuyệt vời! Đây là câu hỏi bổ ích!\n\n🎓 Lời khuyên:\n1. Phân tích kỹ từng phần của bài toán\n2. Vẽ sơ đồ hoặc bảng nếu cần\n3. Tìm mối liên hệ giữa các yếu tố\n4. Kiểm chứng kết quả cuối cùng\n\n✅ Đừng quên ghi chú lại cách giải!`
+                `✨ Đây là một câu hỏi thú vị!\n\n📚 Hướng dẫn:\n1. Ôn lại bài học trước đó\n2. Hiểu rõ định nghĩa cơ bản\n3. Thực hành với các ví dụ\n4. Giải bài tập tương tự\n\n🌟 Khi nào không hiểu, đừng ngần ngại hỏi!`
             ];
             return responses[Math.floor(Math.random() * responses.length)];
         }
