@@ -91,7 +91,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             padding: 30px 20px;
-            min-height: 400px;
+            min-height: 300px;
         }
 
         .section {
@@ -168,6 +168,79 @@
             font-size: 1.1em;
         }
 
+        .ai-section {
+            background: #f0f4ff;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #667eea;
+            margin: 20px;
+        }
+
+        .ai-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .ai-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .ai-section button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .ai-section button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-response-box {
+            background: white;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+            display: none;
+            min-height: 60px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .ai-response-box.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1.8em;
@@ -217,6 +290,13 @@
                 <h2>📝 Kiểm Tra</h2>
                 <ul id="kiemTra" class="task-list"></ul>
             </div>
+        </div>
+
+        <div class="ai-section">
+            <h3>🤖 AI Hỗ Trợ Giải Bài</h3>
+            <textarea id="aiQuestion" placeholder="Nhập câu hỏi bài tập của bạn..."></textarea>
+            <button onclick="askAI()">🎯 Hỏi AI</button>
+            <div id="aiResponse" class="ai-response-box"></div>
         </div>
     </div>
 
@@ -309,6 +389,33 @@
             } else {
                 kiemTraList.innerHTML = '<li class="empty-message">Không có kiểm tra</li>';
             }
+        }
+
+        function askAI() {
+            const question = document.getElementById('aiQuestion').value.trim();
+            const responseDiv = document.getElementById('aiResponse');
+
+            if (!question) {
+                alert('Vui lòng nhập câu hỏi!');
+                return;
+            }
+
+            responseDiv.innerHTML = '🤔 Đang xử lý...';
+            responseDiv.classList.add('active');
+
+            setTimeout(() => {
+                responseDiv.innerHTML = generateAIResponse(question);
+            }, 800);
+        }
+
+        function generateAIResponse(question) {
+            const responses = [
+                `📖 Câu hỏi: "${question}"\n\n💡 Gợi ý:\nHãy xem lại bài học trong sách giáo khoa. Tìm kiếm từ khóa liên quan đến câu hỏi của bạn.\n\n🎯 Cách tiếp cận:\n1. Đọc kỹ đề bài\n2. Xác định dạng bài tập\n3. Áp dụng công thức hoặc quy tắc phù hợp\n4. Kiểm tra lại đáp án`,
+                `⭐ Bạn đặt câu hỏi hay!\n\n🔍 Để giải quyết:\n- Xác định thông tin đã cho\n- Liệt kê công thức cần dùng\n- Thực hiện từng bước tính toán\n- So sánh với lý thuyết\n\n💪 Hãy cố gắng làm trước, nếu khó khăn hãy hỏi thầy cô!`,
+                `✨ Đây là một câu hỏi thú vị!\n\n📚 Hướng dẫn:\n1. Ôn lại bài học trước đó\n2. Hiểu rõ định nghĩa cơ bản\n3. Thực hành với các ví dụ\n4. Giải bài tập tương tự\n\n🌟 Khi nào không hiểu, đừng ngần ngại hỏi!`,
+                `💎 Tuyệt vời! Đây là câu hỏi bổ ích!\n\n🎓 Lời khuyên:\n1. Phân tích kỹ từng phần của bài toán\n2. Vẽ sơ đồ hoặc bảng nếu cần\n3. Tìm mối liên hệ giữa các yếu tố\n4. Kiểm chứng kết quả cuối cùng\n\n✅ Đừng quên ghi chú lại cách giải!`
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
         }
     </script>
 </body>
