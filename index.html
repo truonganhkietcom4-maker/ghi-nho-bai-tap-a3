@@ -168,27 +168,6 @@
             font-size: 1.1em;
         }
 
-        footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            border-top: 2px solid #e0e0e0;
-            color: #666;
-        }
-
-        footer a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-left: 15px;
-        }
-
-        footer a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1.8em;
@@ -225,7 +204,7 @@
 
         <div class="tasks-container">
             <div class="section section-su-kien">
-                <h2>���� Sự Kiện</h2>
+                <h2>🎉 Sự Kiện</h2>
                 <ul id="suKien" class="task-list"></ul>
             </div>
 
@@ -239,11 +218,6 @@
                 <ul id="kiemTra" class="task-list"></ul>
             </div>
         </div>
-
-        <footer>
-            <p>© 2024 Ghi nhớ bài tập A3 - Thiết kế bởi anh kiệt</p>
-            <a href="#" onclick="goToAdmin()">🔐 Admin</a>
-        </footer>
     </div>
 
     <script>
@@ -334,15 +308,6 @@
                 });
             } else {
                 kiemTraList.innerHTML = '<li class="empty-message">Không có kiểm tra</li>';
-            }
-        }
-
-        function goToAdmin() {
-            const password = prompt('Nhập mật khẩu admin:');
-            if (password === '277214') {
-                window.location.href = 'admin.html';
-            } else if (password !== null) {
-                alert('❌ Mật khẩu không đúng!');
             }
         }
     </script>
